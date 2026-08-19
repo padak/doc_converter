@@ -1,0 +1,19 @@
+# Direct dependencies only, lower bounds only.
+# Do NOT regenerate this file with `pip freeze` - that would pin the whole
+# transitive tree and make the service impossible to upgrade in place.
+# Add new direct dependencies by hand, with a `>=` lower bound.
+
+# HTTP service
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+
+# Conversion engines
+# NOTE: pymupdf is AGPL-3.0 licensed - this is the reason the whole repository
+# is AGPL-3.0. See README.md, section "License".
+pymupdf>=1.24
+markitdown[all]>=0.1.1
+
+# Tests
+pytest>=8.0
+httpx>=0.27
