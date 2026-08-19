@@ -45,6 +45,16 @@ this repository is one interchangeable implementation, not a dependency.
 The contract is exactly the two endpoints below. Anything else this service
 happens to expose is not part of it.
 
+**The interactive docs at `/docs` don't show engine routing.** FastAPI
+generates that page from the OpenAPI schema, which only knows the generic
+shape of the request (one `file` upload) and response (`additionalProperties:
+true` - a JSON object with no fixed fields, since `engine` and `characters`
+are the interesting parts, and neither is declared as a typed response model).
+Which engine actually handles a given upload is dispatch logic that runs
+*inside* the handler, so it never reaches the schema. This README, not
+`/docs`, is the source of truth for the routing table below and the response
+shape.
+
 ### `POST /convert`
 
 `multipart/form-data` with a single field named `file`.
@@ -117,6 +127,25 @@ filename, engine and size of each conversion). Document content is never
 logged and never stored: PDFs are parsed from memory, and the temporary file
 markitdown requires is deleted in a `finally` block.
 
+### Makefile
+
+Once the venv above exists, `make` wraps the same service as a background
+process, so you don't need a dedicated terminal tab for it:
+
+```bash
+make help     # list targets
+make start    # start in the background, waits until /health responds
+make status   # is it running, and on which PID/port
+make logs     # follow logs/converter.log
+make stop     # stop it
+make restart  # stop then start
+make test     # .venv/bin/pytest -q
+```
+
+`make start`/`make status`/`make stop` check the actual process on
+`$(PORT)` (8802 by default), not just a PID file - so they don't get fooled by
+a stale file or by a server someone started manually with `uvicorn` directly.
+
 ## Works with doc_quantization
 
 This service was built as the conversion companion of
@@ -132,7 +161,7 @@ implementing the same two endpoints can replace this one.
 ## Tests
 
 ```bash
-.venv/bin/pytest -q
+.venv/bin/pytest -q       # or: make test
 ```
 
 The suite is fully offline - the PDF fixtures are generated in-process with
