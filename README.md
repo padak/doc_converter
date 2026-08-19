@@ -117,6 +117,18 @@ filename, engine and size of each conversion). Document content is never
 logged and never stored: PDFs are parsed from memory, and the temporary file
 markitdown requires is deleted in a `finally` block.
 
+## Works with doc_quantization
+
+This service was built as the conversion companion of
+[doc_quantization](https://github.com/padak/doc_quantization) (Apache-2.0),
+a decontextualization pipeline that anonymizes documents. Running the two
+together is the recommended setup: start this service (`--port 8802`), set
+`conversion.service_url` to `http://localhost:8802` in doc_quantization's
+`config/config.json`, and every uploaded document is converted here before
+chunking — its Verify setup screen reports this service's health. The
+contract is deliberately generic: any client can call it, and any converter
+implementing the same two endpoints can replace this one.
+
 ## Tests
 
 ```bash
